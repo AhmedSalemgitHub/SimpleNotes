@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Simple Notes</string>
+    <string name="add">اضافة</string>
+    <string name="addnotehint">اضف ملاحظتك هنا</string>
+</resources>
