@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -21,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     Realm realm;
     FloatingActionButton addButton;
     ListView listNotes;
-    static ArrayAdapter adapter;
+    static MyNotesAdapter adapter;
 
 
     @Override
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),NoteEditActivity.class);
+                intent.putExtra("mode","add");// لتحديد الفتح في حاله الاضافة
                 startActivity(intent);
             }
         });
@@ -44,15 +46,25 @@ public class MainActivity extends AppCompatActivity {
         initialDataBase(this);
 
         RealmResults<NotesDB> results = realm.where(NotesDB.class).findAll();
-        ArrayList<String> content = new ArrayList<>();
-        for ( int i = 0 ; i < results.size(); i++)
-        {
-            content.add(results.get(i).getNoteContent());
-        }
+//        ArrayList<String> content = new ArrayList<>();
+//        for ( int i = 0 ; i < results.size(); i++)
+//        {
+//            content.add(results.get(i).getNoteContent());
+//        }
 
-        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, content);
+        adapter = new MyArrayAdapter(this, results);
         listNotes.setAdapter(adapter);
 
+        listNotes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                NotesDB selectedNote = (NotesDB) listNotes.getSelectedItem();
+
+                Intent intent  = new Intent(MainActivity.this,NoteEditActivity.class);
+                intent.putExtra("id",selectedNote.getId());
+            }
+        });
     }
 
     @Override

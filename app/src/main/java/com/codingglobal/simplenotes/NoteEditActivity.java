@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -14,7 +15,9 @@ public class NoteEditActivity extends AppCompatActivity {
 
     Realm realm;
     Button ButtonAddNote;
+    Button ButtonEditNote;
     EditText NoteContent;
+    String mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +25,28 @@ public class NoteEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note_edit);
 
         ButtonAddNote = findViewById(R.id.buttonAddNote);
+        ButtonEditNote = findViewById(R.id.buttonEditNote);
         NoteContent = findViewById(R.id.editTextNote);
+
+        mode = getIntent().getStringExtra("mode");
+
+        //اظهار الزر المناسب
+        if (mode.equals("add"))
+        {
+            Toast.makeText(this, "add mode", Toast.LENGTH_SHORT).show();
+            ButtonAddNote.setVisibility(View.VISIBLE);
+            ButtonEditNote.setVisibility(View.INVISIBLE);
+        }
+        else if (mode.equals("add")){
+            Toast.makeText(this, "edit mode", Toast.LENGTH_SHORT).show();
+            ButtonAddNote.setVisibility(View.INVISIBLE);
+            ButtonEditNote.setVisibility(View.VISIBLE);
+        }
+        else{
+            Toast.makeText(this, "something wrong", Toast.LENGTH_SHORT).show();
+        }
+
+
 
         initialDataBase(this);
         ButtonAddNote.setOnClickListener(new View.OnClickListener() {
