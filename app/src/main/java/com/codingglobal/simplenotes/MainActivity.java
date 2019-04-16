@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 //            content.add(results.get(i).getNoteContent());
 //        }
 
-        adapter = new MyArrayAdapter(this, results);
+        adapter = new MyNotesAdapter(this, results);
         listNotes.setAdapter(adapter);
 
         listNotes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
