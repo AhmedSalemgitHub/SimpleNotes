@@ -37,7 +37,7 @@ public class NoteEditActivity extends AppCompatActivity {
             ButtonAddNote.setVisibility(View.VISIBLE);
             ButtonEditNote.setVisibility(View.INVISIBLE);
         }
-        else if (mode.equals("add")){
+        else if (mode.equals("edit")){
             Toast.makeText(this, "edit mode", Toast.LENGTH_SHORT).show();
             ButtonAddNote.setVisibility(View.INVISIBLE);
             ButtonEditNote.setVisibility(View.VISIBLE);

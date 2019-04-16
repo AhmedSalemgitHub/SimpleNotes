@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent  = new Intent(MainActivity.this,NoteEditActivity.class);
                 intent.putExtra("id",selectedNote.getId());
+                intent.putExtra("mode","edit");
+                startActivity(intent);
             }
         });
     }
