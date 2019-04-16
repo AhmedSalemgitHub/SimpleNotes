@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton addButton;
     ListView listNotes;
     static MyNotesAdapter adapter;
+    ArrayList<NotesDB> mainNotesList;
 
 
     @Override
@@ -46,20 +47,21 @@ public class MainActivity extends AppCompatActivity {
         initialDataBase(this);
 
         RealmResults<NotesDB> results = realm.where(NotesDB.class).findAll();
-//        ArrayList<String> content = new ArrayList<>();
-//        for ( int i = 0 ; i < results.size(); i++)
-//        {
-//            content.add(results.get(i).getNoteContent());
-//        }
 
-        adapter = new MyNotesAdapter(this, results);
+        ArrayList<NotesDB> content = new ArrayList<>();
+        for ( int i = 0 ; i < results.size(); i++)
+        {
+            content.add(results.get(i));
+        }
+
+        adapter = new MyNotesAdapter(this, content);
         listNotes.setAdapter(adapter);
 
         listNotes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                NotesDB selectedNote = (NotesDB) listNotes.getSelectedItem();
+                NotesDB selectedNote =  content.get(position);
 
                 Intent intent  = new Intent(MainActivity.this,NoteEditActivity.class);
                 intent.putExtra("id",selectedNote.getId());
