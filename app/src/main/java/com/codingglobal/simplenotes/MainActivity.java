@@ -62,9 +62,11 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 NotesDB selectedNote =  content.get(position);
+                Log.i("test", "position : " + position);
 
                 Intent intent  = new Intent(MainActivity.this,NoteEditActivity.class);
-                intent.putExtra("id",selectedNote.getId());
+                intent.putExtra("selectedId", selectedNote.getId());
+                Log.i("test", "selected id : " + selectedNote.getId());
                 intent.putExtra("mode","edit");
                 startActivity(intent);
             }

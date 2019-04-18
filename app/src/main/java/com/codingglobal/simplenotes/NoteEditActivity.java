@@ -3,6 +3,7 @@ package com.codingglobal.simplenotes;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 
 public class NoteEditActivity extends AppCompatActivity {
 
@@ -18,9 +20,13 @@ public class NoteEditActivity extends AppCompatActivity {
     Button ButtonEditNote;
     EditText NoteContent;
     String mode;
+    int currentId;
+    RealmResults<NotesDB> results;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_edit);
 
@@ -28,7 +34,11 @@ public class NoteEditActivity extends AppCompatActivity {
         ButtonEditNote = findViewById(R.id.buttonEditNote);
         NoteContent = findViewById(R.id.editTextNote);
 
+        //initialize the database
+        initialDataBase(this);
+
         mode = getIntent().getStringExtra("mode");
+        currentId = getIntent().getIntExtra("selectedId", 0);
 
         //اظهار الزر المناسب
         if (mode.equals("add"))
@@ -41,14 +51,18 @@ public class NoteEditActivity extends AppCompatActivity {
             Toast.makeText(this, "edit mode", Toast.LENGTH_SHORT).show();
             ButtonAddNote.setVisibility(View.INVISIBLE);
             ButtonEditNote.setVisibility(View.VISIBLE);
+
+            results = realm.where(NotesDB.class).equalTo("id", currentId).findAll();
+
+            for (NotesDB note : results) {
+                NoteContent.setText(note.getNoteContent());
+            }
         }
         else{
             Toast.makeText(this, "something wrong", Toast.LENGTH_SHORT).show();
         }
 
 
-
-        initialDataBase(this);
         ButtonAddNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,6 +74,19 @@ public class NoteEditActivity extends AppCompatActivity {
 
                 addData(note);
                 MainActivity.adapter.notifyDataSetChanged();
+                finish();
+            }
+        });
+
+        ButtonEditNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (NotesDB note : results) {
+                    realm.beginTransaction();
+                    note.setNoteContent(NoteContent.getText().toString());
+                    realm.commitTransaction();
+
+                }
                 finish();
             }
         });
