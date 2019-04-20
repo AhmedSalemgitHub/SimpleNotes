@@ -73,7 +73,7 @@ public class NoteEditActivity extends AppCompatActivity {
                 note.setNoteContent(NoteContent.getText().toString());
 
                 addData(note);
-                MainActivity.adapter.notifyDataSetChanged();
+
                 finish();
             }
         });

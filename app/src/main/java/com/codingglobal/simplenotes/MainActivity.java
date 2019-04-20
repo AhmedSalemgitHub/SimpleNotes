@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -21,8 +24,10 @@ public class MainActivity extends AppCompatActivity {
 
     Realm realm;
     FloatingActionButton addButton;
-    ListView listNotes;
-    static MyNotesAdapter adapter;
+    RecyclerView listNotes;
+    RecyclerView.Adapter adapter;
+    RecyclerView.LayoutManager layoutManager;
+    //  static MyNotesAdapter adapter;
     ArrayList<NotesDB> mainNotesList;
 
 
@@ -32,15 +37,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         listNotes = findViewById(R.id.ListNotes);
+
+        layoutManager = new LinearLayoutManager(this);
+        listNotes.setLayoutManager(layoutManager);
+
+
         addButton = findViewById(R.id.floatingActionButtonAdd);
 
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),NoteEditActivity.class);
-                intent.putExtra("mode","add");// لتحديد الفتح في حاله الاضافة
-                startActivity(intent);
-            }
+        addButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), NoteEditActivity.class);
+            intent.putExtra("mode", "add");// لتحديد الفتح في حاله الاضافة
+            startActivity(intent);
         });
 
         //initialize the database
@@ -54,23 +61,23 @@ public class MainActivity extends AppCompatActivity {
             content.add(results.get(i));
         }
 
-        adapter = new MyNotesAdapter(this, content);
+        adapter = new MyNotesAdapter(content);
         listNotes.setAdapter(adapter);
 
-        listNotes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                NotesDB selectedNote =  content.get(position);
-                Log.i("test", "position : " + position);
-
-                Intent intent  = new Intent(MainActivity.this,NoteEditActivity.class);
-                intent.putExtra("selectedId", selectedNote.getId());
-                Log.i("test", "selected id : " + selectedNote.getId());
-                intent.putExtra("mode","edit");
-                startActivity(intent);
-            }
-        });
+//        listNotes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//                NotesDB selectedNote =  content.get(position);
+//                Log.i("test", "position : " + position);
+//
+//                Intent intent  = new Intent(MainActivity.this,NoteEditActivity.class);
+//                intent.putExtra("selectedId", selectedNote.getId());
+//                Log.i("test", "selected id : " + selectedNote.getId());
+//                intent.putExtra("mode","edit");
+//                startActivity(intent);
+//            }
+//        });
     }
 
     @Override
