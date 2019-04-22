@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -55,13 +56,13 @@ public class MainActivity extends AppCompatActivity {
 
         RealmResults<NotesDB> results = realm.where(NotesDB.class).findAll();
 
-        ArrayList<NotesDB> content = new ArrayList<>();
+        List<NotesDB> content = new ArrayList<>();
         for ( int i = 0 ; i < results.size(); i++)
         {
             content.add(results.get(i));
         }
 
-        adapter = new MyNotesAdapter(content);
+        adapter = new MyAdapter(this, content);
         listNotes.setAdapter(adapter);
 
 //        listNotes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
