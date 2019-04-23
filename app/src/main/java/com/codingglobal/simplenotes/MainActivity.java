@@ -17,20 +17,29 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.OrderedCollectionChangeSet;
+import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
 
-    Realm realm;
+
     FloatingActionButton addButton;
+
     RecyclerView listNotes;
     RecyclerView.Adapter adapter;
     RecyclerView.LayoutManager layoutManager;
-    //  static MyNotesAdapter adapter;
-    ArrayList<NotesDB> mainNotesList;
 
+    private final OrderedRealmCollectionChangeListener<RealmResults<NotesDB>> realmChangeListener =
+            ((notesDBS, changeSet) -> adapter.notifyDataSetChanged());
+    List<NotesDB> content = new ArrayList<>();
+    ///////////////////////////
+    private Realm realm;
+    private RealmResults<NotesDB> results;
+    ////////////////////////////
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +47,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         listNotes = findViewById(R.id.ListNotes);
+        addButton = findViewById(R.id.floatingActionButtonAdd);
 
         layoutManager = new LinearLayoutManager(this);
         listNotes.setLayoutManager(layoutManager);
 
+        adapter = new MyAdapter(this, content);
+        listNotes.setAdapter(adapter);
 
-        addButton = findViewById(R.id.floatingActionButtonAdd);
+        realm = Realm.getDefaultInstance();
+        results = realm.where(NotesDB.class).findAll();
+        results.addChangeListener(realmChangeListener);
+
+        content.addAll(results);
 
         addButton.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), NoteEditActivity.class);
@@ -51,50 +67,16 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        //initialize the database
-        initialDataBase(this);
-
-        RealmResults<NotesDB> results = realm.where(NotesDB.class).findAll();
-
-        List<NotesDB> content = new ArrayList<>();
-        for ( int i = 0 ; i < results.size(); i++)
-        {
-            content.add(results.get(i));
-        }
-
-        adapter = new MyAdapter(this, content);
-        listNotes.setAdapter(adapter);
-
-//        listNotes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//                NotesDB selectedNote =  content.get(position);
-//                Log.i("test", "position : " + position);
-//
-//                Intent intent  = new Intent(MainActivity.this,NoteEditActivity.class);
-//                intent.putExtra("selectedId", selectedNote.getId());
-//                Log.i("test", "selected id : " + selectedNote.getId());
-//                intent.putExtra("mode","edit");
-//                startActivity(intent);
-//            }
-//        });
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
-    protected void onResume() {
-        Log.i("Test","OnResume");
-        super.onResume();
-        adapter.notifyDataSetChanged();
-    }
-
-
-    private void initialDataBase(Context context) {
-
-        Realm.init(context);
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
-        Realm.setDefaultConfiguration(realmConfiguration);
-        realm = Realm.getDefaultInstance();
-
+    protected void onDestroy() {
+        super.onDestroy();
+        results.removeAllChangeListeners();
+        realm.close();
     }
 }

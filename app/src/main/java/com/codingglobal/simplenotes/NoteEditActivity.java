@@ -3,7 +3,6 @@ package com.codingglobal.simplenotes;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,7 +34,8 @@ public class NoteEditActivity extends AppCompatActivity {
         NoteContent = findViewById(R.id.editTextNote);
 
         //initialize the database
-        initialDataBase(this);
+        //initialDataBase(this);
+        realm = Realm.getDefaultInstance();
 
         mode = getIntent().getStringExtra("mode");
         currentId = getIntent().getIntExtra("selectedId", 0);
@@ -63,41 +63,31 @@ public class NoteEditActivity extends AppCompatActivity {
         }
 
 
-        ButtonAddNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NotesDB note = new NotesDB();
-                note.setId(getNextKey());
-                note.setNoteTitle("note");
-                note.setNoteOwner("Ahmed");
-                note.setNoteContent(NoteContent.getText().toString());
-
-                addData(note);
-
-                finish();
-            }
+        ButtonAddNote.setOnClickListener(v -> {
+            NotesDB note = new NotesDB();
+            note.setId(getNextKey());
+            note.setNoteTitle("note");
+            note.setNoteOwner("Ahmed");
+            note.setNoteContent(NoteContent.getText().toString());
+            addData(note);
+            finish();
         });
 
-        ButtonEditNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (NotesDB note : results) {
-                    realm.beginTransaction();
-                    note.setNoteContent(NoteContent.getText().toString());
-                    realm.commitTransaction();
+        ButtonEditNote.setOnClickListener(v -> {
+            for (NotesDB note : results) {
+                realm.beginTransaction();
+                note.setNoteContent(NoteContent.getText().toString());
+                realm.commitTransaction();
 
-                }
-                finish();
             }
+            finish();
         });
     }
-
     private void addData(NotesDB note) {
         realm.beginTransaction();
         realm.copyToRealm(note);
         realm.commitTransaction();
     }
-
     private int getNextKey() {
         try {
             return realm.where(NotesDB.class).max("id").intValue() + 1;
@@ -113,5 +103,11 @@ public class NoteEditActivity extends AppCompatActivity {
         Realm.setDefaultConfiguration(realmConfiguration);
         realm = Realm.getDefaultInstance();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        realm.close();
     }
 }
