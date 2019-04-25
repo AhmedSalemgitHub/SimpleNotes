@@ -37,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         listNotes.setLayoutManager(layoutManager);
 
-        realm = Realm.getDefaultInstance();
-        results = realm.where(NotesDB.class).findAll();
-        content.addAll(results);
+        //realm = Realm.getDefaultInstance();
+        //results = realm.where(NotesDB.class).findAll();
+        //content.addAll(results);
 
         adapter = new MyAdapter(this, content);
         listNotes.setAdapter(adapter);
@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         results = realm.where(NotesDB.class).findAll();
         content.clear();
         content.addAll(results);
+        adapter.notifyDataSetChanged();
 
     }
 
