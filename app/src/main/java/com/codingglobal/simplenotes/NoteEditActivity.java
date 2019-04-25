@@ -78,7 +78,6 @@ public class NoteEditActivity extends AppCompatActivity {
                 realm.beginTransaction();
                 note.setNoteContent(NoteContent.getText().toString());
                 realm.commitTransaction();
-
             }
             finish();
         });

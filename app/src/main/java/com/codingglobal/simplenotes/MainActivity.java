@@ -52,14 +52,12 @@ public class MainActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         listNotes.setLayoutManager(layoutManager);
 
-        adapter = new MyAdapter(this, content);
-        listNotes.setAdapter(adapter);
-
         realm = Realm.getDefaultInstance();
         results = realm.where(NotesDB.class).findAll();
-        results.addChangeListener(realmChangeListener);
-
         content.addAll(results);
+
+        adapter = new MyAdapter(this, content);
+        listNotes.setAdapter(adapter);
 
         addButton.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), NoteEditActivity.class);
@@ -71,12 +69,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        realm = Realm.getDefaultInstance();
+        results = realm.where(NotesDB.class).findAll();
+        content.clear();
+        content.addAll(results);
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        results.removeAllChangeListeners();
         realm.close();
     }
 }

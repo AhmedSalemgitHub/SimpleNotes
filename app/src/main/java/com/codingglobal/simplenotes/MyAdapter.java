@@ -45,6 +45,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.NoteHolder> {
                 context.startActivity(intent);
             }
         });
+
+        noteHolder.mainView.setOnLongClickListener(v -> true);
     }
 
     @Override
