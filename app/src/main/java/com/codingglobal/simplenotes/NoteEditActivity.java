@@ -1,6 +1,6 @@
 package com.codingglobal.simplenotes;
 
-import android.content.Context;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,8 +8,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.Objects;
+
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
 public class NoteEditActivity extends AppCompatActivity {
@@ -89,20 +90,12 @@ public class NoteEditActivity extends AppCompatActivity {
     }
     private int getNextKey() {
         try {
-            return realm.where(NotesDB.class).max("id").intValue() + 1;
+            return Objects.requireNonNull(realm.where(NotesDB.class).max("id")).intValue() + 1;
         }catch (ArrayIndexOutOfBoundsException | NullPointerException e){
             return 0;
         }
     }
 
-    private void initialDataBase(Context context) {
-
-        Realm.init(context);
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
-        Realm.setDefaultConfiguration(realmConfiguration);
-        realm = Realm.getDefaultInstance();
-
-    }
 
     @Override
     protected void onDestroy() {

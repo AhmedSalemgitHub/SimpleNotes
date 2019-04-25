@@ -18,7 +18,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.NoteHolder> {
     private Context context;
     private List<NotesDB> list;
 
-    public MyAdapter(Context context, List<NotesDB> list) {
+    MyAdapter(Context context, List<NotesDB> list) {
         this.context = context;
         this.list = list;
     }
@@ -27,23 +27,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.NoteHolder> {
     @Override
     public NoteHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View row = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.note_list_item, viewGroup, false);
-        NoteHolder holder = new NoteHolder(row);
 
-        return holder;
+        return new NoteHolder(row);
     }
 
     @Override
     public void onBindViewHolder(@NonNull NoteHolder noteHolder, int i) {
         final NotesDB note = list.get(i);
         noteHolder.tv.setText(note.getNoteContent());
-        noteHolder.mainView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, NoteEditActivity.class);
-                intent.putExtra("selectedId", note.getId());
-                intent.putExtra("mode", "edit");
-                context.startActivity(intent);
-            }
+        noteHolder.mainView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, NoteEditActivity.class);
+            intent.putExtra("selectedId", note.getId());
+            intent.putExtra("mode", "edit");
+            context.startActivity(intent);
         });
 
         noteHolder.mainView.setOnLongClickListener(v -> true);
@@ -54,11 +50,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.NoteHolder> {
         return list.size();
     }
 
-    public class NoteHolder extends RecyclerView.ViewHolder {
+    class NoteHolder extends RecyclerView.ViewHolder {
         TextView tv;
         ConstraintLayout mainView;
 
-        public NoteHolder(@NonNull View itemView) {
+        NoteHolder(@NonNull View itemView) {
             super(itemView);
             tv = itemView.findViewById(R.id.NoteListItemContent);
             mainView = itemView.findViewById(R.id.mainView);
