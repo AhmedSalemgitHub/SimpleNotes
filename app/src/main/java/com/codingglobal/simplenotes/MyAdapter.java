@@ -9,18 +9,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.NoteHolder> {
 
     private Context context;
     private List<NotesDB> list;
+    public Realm realm;
 
     MyAdapter(Context context, List<NotesDB> list) {
         this.context = context;
         this.list = list;
+        realm = Realm.getDefaultInstance();
     }
 
     @NonNull
@@ -42,7 +46,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.NoteHolder> {
             context.startActivity(intent);
         });
 
-        noteHolder.mainView.setOnLongClickListener(v -> true);
+        noteHolder.mainView.setOnLongClickListener(v -> {
+
+            realm.executeTransaction(realm -> {
+                RealmResults<NotesDB> resultsForDelete =
+                        realm.where(NotesDB.class).equalTo("id", note.getId()).findAll();
+                resultsForDelete.deleteAllFromRealm();
+                list.remove(i);
+                notifyItemRemoved(i);
+                notifyItemRangeChanged(i, list.size());
+            });
+            return true;
+        });
     }
 
     @Override
@@ -58,7 +73,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.NoteHolder> {
             super(itemView);
             tv = itemView.findViewById(R.id.NoteListItemContent);
             mainView = itemView.findViewById(R.id.mainView);
-
         }
     }
 }
